@@ -1,0 +1,3 @@
+[submodule "deadcli"]
+	path = extern/deadcli
+	url = https://github.com/floppyMike/deadcli.git
