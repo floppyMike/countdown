@@ -16,7 +16,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    exe.root_module.addImport("deadsimple", deadcliPackage.module("deadcli"));
+    exe.root_module.addImport("deadcli", deadcliPackage.module("deadcli"));
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);
