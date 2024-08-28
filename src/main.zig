@@ -56,7 +56,7 @@ pub fn main() void {
     // Convert time
     //
 
-    const time = blk: {
+    const deltaTime = blk: {
         inline for (
             .{ args.ms, args.s, args.min, args.h },
             .{ std.time.ms_per_week, std.time.s_per_week, 60 * 24 * 7, 24 * 7 },
@@ -76,20 +76,22 @@ pub fn main() void {
     //
     // Create time state
     //
-
-    const stopAt = @as(u64, @intCast(std.time.milliTimestamp())) + time;
+    const stopAt = blk: {
+        const now: u64 = @bitCast(std.time.milliTimestamp()); // Will never be negative
+        break :blk now +% deltaTime;
+    };
 
     //
     // Wait out time
     //
 
     while (true) {
-        const currTime: u64 = @intCast(std.time.milliTimestamp());
+        const currTime: u64 = @bitCast(std.time.milliTimestamp()); // Will never by negative
         if (currTime > stopAt) {
             break;
         }
 
-        var remaining = stopAt - currTime;
+        var remaining = stopAt -% currTime;
 
         const hours = std.math.divFloor(u64, remaining, std.time.ms_per_hour) catch unreachable;
         remaining -= hours * std.time.ms_per_hour;
