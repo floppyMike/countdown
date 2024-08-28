@@ -13,10 +13,6 @@ fn timeOverflowError(timeStr: []const u8, prefix: []const u8) noreturn {
     std.debug.panic("Given time \"{s}{s}\" shouldn't exeed a week.", .{ timeStr, prefix });
 }
 
-fn numberError(numStr: []const u8) noreturn {
-    std.debug.panic("Couldn't convert \"{s}\" to a positive number.", .{numStr});
-}
-
 pub fn main() void {
     const stdoutFile = std.io.getStdOut().writer();
 
@@ -61,17 +57,17 @@ pub fn main() void {
     //
 
     const time = blk: {
-        if (args.ms) |ms| {
-            break :blk std.fmt.parseInt(u64, ms, 10) catch numberError(ms);
-        }
-        if (args.s) |s| {
-            break :blk (std.fmt.parseInt(u64, s, 10) catch numberError(s)) * std.time.ms_per_s;
-        }
-        if (args.min) |min| {
-            break :blk (std.fmt.parseInt(u64, min, 10) catch numberError(min)) * std.time.ms_per_min;
-        }
-        if (args.h) |h| {
-            break :blk (std.fmt.parseInt(u64, h, 10) catch numberError(h)) * std.time.ms_per_hour;
+        inline for (
+            .{ args.ms, args.s, args.min, args.h },
+            .{ std.time.ms_per_week, std.time.s_per_week, 60 * 24 * 7, 24 * 7 },
+            .{ "ms", "s", "min", "h" },
+            .{ 1, std.time.ms_per_s, std.time.ms_per_min, std.time.ms_per_hour },
+        ) |optTimeStr, limitNum, prefixStr, inMsMultiplierNum| {
+            if (optTimeStr) |timeStr| {
+                const timeNum = std.fmt.parseInt(u64, timeStr, 10) catch numberU64Error(timeStr);
+                if (timeNum > limitNum) timeOverflowError(timeStr, prefixStr);
+                break :blk timeNum * inMsMultiplierNum;
+            }
         }
 
         @panic("At least one number must be specified.");
