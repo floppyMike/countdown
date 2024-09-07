@@ -1,5 +1,5 @@
 .{
-    .name = "deadtimer",
+    .name = "demer",
     .version = "1.0.0",
 
     .dependencies = .{

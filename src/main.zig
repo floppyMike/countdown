@@ -21,7 +21,7 @@ pub fn main() void {
     const stdoutFile = std.io.getStdOut().writer();
 
     const Args = di.ArgStruct(
-        "deadtimer",
+        "demer",
         "Dead simple cli blocking timer for linux",
         &.{ .{
             .name = "help",

@@ -26,14 +26,14 @@
     in {
     # Utilized by `nix develop`
     devShell.x86_64-linux = pkgs.mkShell.override { stdenv = pkgs.clangStdenv; } {
-      name = "deadtimer";
+      name = "demer";
       inherit buildInputs;
       nativeBuildInputs = nativeBuildInputs ++ devInputs;
     };
 
     # Utilized by `nix build`
     defaultPackage.x86_64-linux = pkgs.clangStdenv.mkDerivation rec {
-      pname = "deadtimer";
+      pname = "demer";
       version = "0.1.0";
       src = ./.;
 
@@ -55,7 +55,7 @@
     # Utilized by `nix run`
     apps.x86_64-linux = {
       type = "app";
-      program = self.packages.x86_64-linux.deadtimer;
+      program = self.packages.x86_64-linux.demer;
     };
   };
 }
