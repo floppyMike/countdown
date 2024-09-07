@@ -13,6 +13,10 @@ fn timeOverflowError(timeStr: []const u8, prefix: []const u8) noreturn {
     std.debug.panic("Given time \"{s}{s}\" shouldn't exeed a week.", .{ timeStr, prefix });
 }
 
+fn unknownCliError(reason: anyerror) noreturn {
+    std.debug.panic("Failed to interpret CLI: {any}\n", .{reason});
+}
+
 pub fn main() void {
     const stdoutFile = std.io.getStdOut().writer();
 
@@ -43,11 +47,7 @@ pub fn main() void {
         null,
     );
 
-    const parsedArgs = Args.parseArgs(std.os.argv[1..]) catch {
-        Args.displayHelp(stdoutFile) catch |e| ioError(e);
-        return;
-    };
-
+    const parsedArgs = Args.parseArgs(std.os.argv[1..]) catch |e| unknownCliError(e);
     const args = parsedArgs.args;
 
     if (args.help) {
