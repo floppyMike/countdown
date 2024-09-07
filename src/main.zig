@@ -19,10 +19,13 @@ pub fn main() void {
     const Args = di.ArgStruct(
         "deadtimer",
         "Dead simple cli blocking timer for linux",
-        &.{.{
+        &.{ .{
             .name = "help",
             .desc = "Displays this help message.",
-        }},
+        }, .{
+            .name = "rev",
+            .desc = "Rather than counting up, count down.",
+        } },
         &.{ .{
             .name = "ms",
             .desc = "Count down milliseconds.",
@@ -76,10 +79,8 @@ pub fn main() void {
     //
     // Create time state
     //
-    const stopAt = blk: {
-        const now: u64 = @bitCast(std.time.milliTimestamp()); // Will never be negative
-        break :blk now +% deltaTime;
-    };
+    const startAt: u64 = @bitCast(std.time.milliTimestamp()); // Will never be negative
+    const stopAt = startAt +% deltaTime;
 
     //
     // Wait out time
@@ -91,7 +92,7 @@ pub fn main() void {
             break;
         }
 
-        var remaining = stopAt -% currTime;
+        var remaining = if (args.rev) stopAt -% currTime else currTime -% startAt;
 
         const hours = std.math.divFloor(u64, remaining, std.time.ms_per_hour) catch unreachable;
         remaining -= hours * std.time.ms_per_hour;
