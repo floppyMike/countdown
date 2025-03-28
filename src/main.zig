@@ -21,7 +21,6 @@ pub fn main() void {
     const stdoutFile = std.io.getStdOut().writer();
 
     const Args = cli.ArgStruct(
-        "demer",
         "Dead simple cli blocking countdown for linux",
         &.{ .{
             .name = "help",
@@ -51,7 +50,7 @@ pub fn main() void {
     const args = parsedArgs.args;
 
     if (args.help) {
-        Args.displayHelp(stdoutFile) catch |e| ioError(e);
+        Args.displayHelp(stdoutFile, std.os.argv[0]) catch |e| ioError(e);
         return;
     }
 
