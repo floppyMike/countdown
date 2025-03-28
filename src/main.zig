@@ -18,7 +18,7 @@ fn unknownCliError(reason: anyerror) noreturn {
 }
 
 pub fn main() void {
-    const stdoutFile = std.io.getStdOut().writer();
+    const stdoutWriter = std.io.getStdOut().writer();
 
     const Args = cli.ArgStruct(
         "Dead simple cli blocking countdown for linux",
@@ -50,7 +50,7 @@ pub fn main() void {
     const args = parsedArgs.args;
 
     if (args.help) {
-        Args.displayHelp(stdoutFile, std.os.argv[0]) catch |e| ioError(e);
+        Args.displayHelp(stdoutWriter, std.os.argv[0]) catch |e| ioError(e);
         return;
     }
 
@@ -104,7 +104,7 @@ pub fn main() void {
 
         const milliseconds = remaining;
 
-        stdoutFile.print("\x1B[2K\r{:0>3}:{:0>2}:{:0>2}:{:0>3}", .{ hours, minutes, seconds, milliseconds }) catch |e| ioError(e);
+        stdoutWriter.print("\x1B[2K\r{:0>3}:{:0>2}:{:0>2}:{:0>3}", .{ hours, minutes, seconds, milliseconds }) catch |e| ioError(e);
 
         std.time.sleep(std.time.ns_per_ms); // Wait one ms
     }
