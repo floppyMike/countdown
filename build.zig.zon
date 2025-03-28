@@ -1,7 +1,7 @@
 .{
-    .name = .demer,
+    .name = .countdown,
     .version = "1.0.0",
-    .fingerprint = 0x40e6f620ed3ba1f9,
+    .fingerprint = 0x376b835672a7bb1e,
     .minimum_zig_version = "0.14.0",
 
     .dependencies = .{

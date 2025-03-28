@@ -22,7 +22,7 @@ pub fn main() void {
 
     const Args = cli.ArgStruct(
         "demer",
-        "Dead simple cli blocking timer for linux",
+        "Dead simple cli blocking countdown for linux",
         &.{ .{
             .name = "help",
             .desc = "Displays this help message.",
