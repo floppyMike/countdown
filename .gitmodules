@@ -1,3 +1,3 @@
-[submodule "deadcli"]
-	path = extern/deadcli
-	url = https://github.com/floppyMike/deadcli.git
+[submodule "deadsimple"]
+	path = extern/deadsimple
+	url = https://github.com/floppyMike/deadsimple.git

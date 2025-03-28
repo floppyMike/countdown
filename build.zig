@@ -11,12 +11,12 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    const deadcliPackage = b.dependency("deadcli", .{
+    const deadsimplePackage = b.dependency("deadsimple", .{
         .target = target,
         .optimize = optimize,
     });
 
-    exe.root_module.addImport("deadcli", deadcliPackage.module("deadcli"));
+    exe.root_module.addImport("deadsimple", deadsimplePackage.module("deadsimple"));
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);

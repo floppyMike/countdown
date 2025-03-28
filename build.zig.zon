@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.14.0",
 
     .dependencies = .{
-        .deadcli = .{
-            .path = "extern/deadcli",
+        .deadsimple = .{
+            .path = "extern/deadsimple",
         },
     },
 

@@ -1,5 +1,5 @@
 const std = @import("std");
-const di = @import("deadcli");
+const cli = @import("deadsimple").cli;
 
 fn numberU64Error(numStr: []const u8) noreturn {
     std.debug.panic("Couldn't convert \"{s}\" to a 64bit unsigned number.", .{numStr});
@@ -20,7 +20,7 @@ fn unknownCliError(reason: anyerror) noreturn {
 pub fn main() void {
     const stdoutFile = std.io.getStdOut().writer();
 
-    const Args = di.ArgStruct(
+    const Args = cli.ArgStruct(
         "demer",
         "Dead simple cli blocking timer for linux",
         &.{ .{
