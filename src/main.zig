@@ -1,25 +1,35 @@
 const std = @import("std");
 const cli = @import("deadsimple").cli;
 
-fn numberU64Error(numStr: []const u8) noreturn {
-    std.debug.panic("Couldn't convert \"{s}\" to a 64bit unsigned number.", .{numStr});
-}
+const stdoutWriter = std.io.getStdOut().writer();
+const stderrWriter = std.io.getStdErr().writer();
 
 fn ioError(reason: anyerror) noreturn {
-    std.debug.panic("Failed to print: {any}.", .{reason});
+    std.debug.panic("Failed to access stdout: {any}.", .{reason});
 }
 
-fn timeOverflowError(timeStr: []const u8, prefix: []const u8) noreturn {
-    std.debug.panic("Given time \"{s}{s}\" shouldn't exeed a week.", .{ timeStr, prefix });
+fn printError(comptime format: []const u8, args: anytype) u8 {
+    stderrWriter.print("Error: " ++ format ++ "\n", args) catch |e| ioError(e);
+    return 1;
 }
 
-fn unknownCliError(reason: anyerror) noreturn {
-    std.debug.panic("Failed to interpret CLI: {any}\n", .{reason});
+fn numberU64Error(numStr: []const u8) u8 {
+    return printError("Couldn't convert \"{s}\" to a 64bit unsigned number.", .{numStr});
 }
 
-pub fn main() void {
-    const stdoutWriter = std.io.getStdOut().writer();
+fn timeOverflowError(timeStr: []const u8, prefix: []const u8) u8 {
+    return printError("Given time \"{s}{s}\" shouldn't exeed a week.", .{ timeStr, prefix });
+}
 
+fn unknownCliError(reason: anyerror) u8 {
+    return printError("Failed to interpret CLI: {any}.", .{reason});
+}
+
+fn noNumberError() u8 {
+    return printError("At least one number must be specified.", .{});
+}
+
+pub fn main() u8 {
     const Args = cli.ArgStruct(
         "Dead simple cli blocking countdown for linux",
         &.{ .{
@@ -46,12 +56,12 @@ pub fn main() void {
         null,
     );
 
-    const parsedArgs = Args.parseArgs(std.os.argv[1..]) catch |e| unknownCliError(e);
+    const parsedArgs = Args.parseArgs(std.os.argv[1..]) catch |e| return unknownCliError(e);
     const args = parsedArgs.args;
 
     if (args.help) {
         Args.displayHelp(stdoutWriter, std.os.argv[0]) catch |e| ioError(e);
-        return;
+        return 0;
     }
 
     //
@@ -66,13 +76,13 @@ pub fn main() void {
             .{ 1, std.time.ms_per_s, std.time.ms_per_min, std.time.ms_per_hour },
         ) |optTimeStr, limitNum, prefixStr, inMsMultiplierNum| {
             if (optTimeStr) |timeStr| {
-                const timeNum = std.fmt.parseInt(u64, timeStr, 10) catch numberU64Error(timeStr);
-                if (timeNum > limitNum) timeOverflowError(timeStr, prefixStr);
+                const timeNum = std.fmt.parseInt(u64, timeStr, 10) catch return numberU64Error(timeStr);
+                if (timeNum > limitNum) return timeOverflowError(timeStr, prefixStr);
                 break :blk timeNum * inMsMultiplierNum;
             }
         }
 
-        @panic("At least one number must be specified.");
+        return noNumberError();
     };
 
     //
@@ -108,4 +118,6 @@ pub fn main() void {
 
         std.time.sleep(std.time.ns_per_ms); // Wait one ms
     }
+
+    return 0;
 }
